@@ -130,3 +130,6 @@ dmypy.json
 
 # bot token
 bot.yaml
+
+# pretrained models
+model/
