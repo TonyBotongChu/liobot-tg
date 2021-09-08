@@ -1,0 +1,4 @@
+token:
+  '1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+proxy:
+  url: 'socks5://127.0.0.1:1080'
