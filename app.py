@@ -2,6 +2,8 @@ import torch
 import random
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 
+import logging
+
 class BotBackend:
     def __init__(self, model_name):
         self.tokenizer = AutoTokenizer.from_pretrained("model/" + model_name)
@@ -43,6 +45,12 @@ class BotBackend:
             # remove redundant [CLS] and [SEP]
             text = text[1:-1]
             text = ''.join(text)
+            logging.info(text)
+        if text.startswith(self.tokenizer.cls_token):
+            text = text[len(self.tokenizer.cls_token):]
+        if text.endswith(self.tokenizer.sep_token):
+            text = text[:-len(self.tokenizer.sep_token)]
+        logging.info("text complete")
         return text
 
 
