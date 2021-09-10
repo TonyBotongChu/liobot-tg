@@ -27,16 +27,20 @@ class BotBackend:
         masked_text += self.tokenizer.sep_token
         return masked_text
 
+    # TODO: add banned or excluded words here
     def fill_mask(self, text):
         while self.tokenizer.mask_token in text:
+            top_num = text.count(self.tokenizer.mask_token) + 1
+            logging.info("top num = " + str(top_num))
             input = self.tokenizer.encode(text, return_tensors="pt")
             mask_token_indexes = torch.where(input == self.tokenizer.mask_token_id)[1]
             # mask_token_index = torch.where(input == tokenizer.mask_token_id)[1]
             mask_token_index = torch.reshape(random.choice(mask_token_indexes), (1,))
             token_logits = self.model(input)[0]
             mask_token_logits = token_logits[0, mask_token_index, :]
-            # top_5_tokens = torch.topk(mask_token_logits, 5, dim=1).indices[0].tolist()
-            predict_token = torch.topk(mask_token_logits, 1, dim=1).indices[0].tolist()[0]
+            top_k_tokens = torch.topk(mask_token_logits, top_num, dim=1).indices[0].tolist()
+            # predict_token = torch.topk(mask_token_logits, 1, dim=1).indices[0].tolist()[0]
+            predict_token = random.choice(top_k_tokens)
             # predict_word = self.tokenizer.decode([predict_token])
             output = input.clone()
             # current_token = output[0][mask_token_index.tolist()[0]].tolist()
