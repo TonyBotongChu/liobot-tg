@@ -7,6 +7,24 @@ class BotBackend:
         self.tokenizer = AutoTokenizer.from_pretrained("model/" + model_name)
         self.model = AutoModelForMaskedLM.from_pretrained("model/" + model_name)
 
+    def fill_template(self, template, word):
+        masked_text = ""
+        masked_text += self.tokenizer.cls_token
+        word_not_filled = word is not None
+        for element in template:
+            if isinstance(element, str):
+                masked_text += element
+            else:
+                if word_not_filled:
+                    masked_text += word
+                    word_not_filled = False
+                    continue
+                min_len, max_len = element
+                len = random.randint(min_len, max_len)
+                masked_text += self.tokenizer.mask_token * len
+        masked_text += self.tokenizer.sep_token
+        return masked_text
+
     def fill_mask(self, text):
         while self.tokenizer.mask_token in text:
             input = self.tokenizer.encode(text, return_tensors="pt")
@@ -29,7 +47,13 @@ class BotBackend:
 
 
 if __name__ == "__main__":
-    bot_backend = BotBackend("guwenbert-large")
-    text = '[CLS]试看今日之域中，竟是谁家之[MASK][MASK]。[SEP]'
+    # bot_backend = BotBackend("guwenbert-large")
+    bot_backend = BotBackend("ernie-1.0")
+    text = '[CLS]试看今日之域中，竟是谁[MASK]之[MASK][MASK]。[SEP]'
+    text = bot_backend.fill_mask(text)
+    print(text)
+    template = ["您天天都在",(2,5),"，您完全不",(2,3),"的是吗？"]
+    text = bot_backend.fill_template(template, "摸鱼")
+    print(text)
     text = bot_backend.fill_mask(text)
     print(text)
