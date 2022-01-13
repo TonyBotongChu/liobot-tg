@@ -13,6 +13,24 @@ class BotBackend:
         self.model = AutoModelForMaskedLM.from_pretrained("model/" + model_name)
         self.fm_pipeline = FillMaskPipeline(model=self.model, tokenizer=self.tokenizer)
 
+    def fill_template(self, template, word):
+        masked_text = ""
+        masked_text += self.tokenizer.cls_token
+        word_not_filled = word is not None
+        for element in template:
+            if isinstance(element, str):
+                masked_text += element
+            else:
+                if word_not_filled:
+                    masked_text += word
+                    word_not_filled = False
+                    continue
+                min_len, max_len = element
+                len = random.randint(min_len, max_len)
+                masked_text += self.tokenizer.mask_token * len
+        masked_text += self.tokenizer.sep_token
+        return masked_text
+
     # TODO: add banned or excluded words here
     def fill_mask(self, text):
         while self.tokenizer.mask_token in text:
