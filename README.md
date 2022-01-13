@@ -1,6 +1,7 @@
 # liobot-tg
 
-Liobot a telegram bot for academic use.
+Liobot: a telegram bot for academic use. 
+Named after my friend liolok.
 
 ## requirements
 
