@@ -51,7 +51,7 @@ def fill_template(update: Update, context: CallbackContext) -> None:
     template_name = context.args[0]
     text = context.args[1]
     if template_name == "健身环":
-        template = ["您每天都在", (2, 5), "，您", (3, 7), "是吗？"]
+        template = ["您天天都在", (2, 5), "，您完全不", (3, 10), "是吗？"]
     else:
         template = ["error: unknown template ____liobot"]
     text = bot_backend.fill_template(template, text)
