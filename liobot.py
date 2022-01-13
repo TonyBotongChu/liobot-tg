@@ -5,7 +5,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 
 import yaml
 
-from app import BotBackend
+from app import BertBackend
 
 with open("bot.yaml", 'r') as stream:
     settings = yaml.safe_load(stream)
@@ -22,7 +22,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-bot_backend = BotBackend("ernie-1.0")
+bot_backend = BertBackend("ernie-1.0")
 
 # Define a few command handlers. These usually take the two arguments update and
 # context.

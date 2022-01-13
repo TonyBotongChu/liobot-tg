@@ -7,7 +7,7 @@ from transformers import AutoTokenizer, AutoModelForMaskedLM, FillMaskPipeline
 
 import logging
 
-class BotBackend:
+class BertBackend:
     def __init__(self, model_name):
         self.tokenizer = AutoTokenizer.from_pretrained("model/" + model_name)
         self.model = AutoModelForMaskedLM.from_pretrained("model/" + model_name)
@@ -64,7 +64,7 @@ class BotBackend:
 
 if __name__ == "__main__":
     # bot_backend = BotBackend("guwenbert-large")
-    bot_backend = BotBackend("ernie-1.0")
+    bot_backend = BertBackend("ernie-1.0")
     text = '[CLS]试看今日之域中，竟是谁[MASK]之[MASK][MASK]。[SEP]'
     text = bot_backend.fill_mask(text)
     print(text)
