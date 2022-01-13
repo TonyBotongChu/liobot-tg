@@ -31,28 +31,34 @@ class BotBackend:
         masked_text += self.tokenizer.sep_token
         return masked_text
 
+    def fill_one_mask(self, mask_to_fill):
+        scores = torch.zeros(len(mask_to_fill))
+        for i in range(0, len(mask_to_fill)):
+            scores[i] = mask_to_fill[i]['score']
+        s = nn.Softmax(dim=0)
+        probabilities = s(scores)
+
+        # numpy bug: raise 'ValueError: probabilities do not sum to 1' even if the sum is 1
+        probabilities = numpy.asarray(probabilities).astype('float64')
+        probabilities = probabilities / numpy.sum(probabilities)
+
+        # print(probabilities)
+        text = numpy.random.choice(mask_to_fill, p=probabilities)['sequence']
+        return text
+
+
     # TODO: add banned or excluded words here
     def fill_mask(self, text):
         while self.tokenizer.mask_token in text:
             result = self.fm_pipeline(text)
             if text.count(self.tokenizer.mask_token) == 1:
-                text = result[0]['sequence']
+                mask_to_fill = result
             else:
                 # the first index represents which <mask> to be filled
                 # and the second index represents the candidate number, sort by score
                 mask_to_fill = random.choice(result)
-                scores = torch.zeros(len(mask_to_fill))
-                for i in range(0, len(mask_to_fill)):
-                    scores[i] = mask_to_fill[i]['score']
-                s = nn.Softmax(dim=0)
-                probabilities = s(scores)
+            text = self.fill_one_mask(mask_to_fill)
 
-                # numpy bug: raise 'ValueError: probabilities do not sum to 1' even if the sum is 1
-                probabilities = numpy.asarray(probabilities).astype('float64')
-                probabilities = probabilities / numpy.sum(probabilities)
-
-                print(probabilities)
-                text = numpy.random.choice(mask_to_fill, p=probabilities)['sequence']
         text = text.replace(' ', '')
         return text
 
